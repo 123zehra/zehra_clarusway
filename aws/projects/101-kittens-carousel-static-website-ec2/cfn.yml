@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: |
+  Kittens Carousel Application
+Parameters:
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+
+Resources:
+  ZehraInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmiId
+      InstanceType: t2.micro
+      KeyName: firstkey
+      SecurityGroups: 
+        !Ref ZehraSecGRP
+      Tags: 
+        -Keyname: Name
+         Value: `Web Server of StackName`
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y httpd git
+          systemctl start httpd
+          systemctl enable httpd
+        
+
+    
+
+  
+  ZehraSecGRP:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows only HTTP connection
+      SecurityGroupIngress: 
+        -IpProtocol: tcp
+         FromPort: 80
+         ToPort: 80
+         CidrIp: 0.0.0.0/0      
+
+Outputs:
+  
+
